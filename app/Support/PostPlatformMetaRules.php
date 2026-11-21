@@ -9,6 +9,7 @@ use App\Enums\GoogleBusiness\TopicType;
 use App\Enums\Instagram\TrialGraduation;
 use App\Enums\PostPlatform\ContentType;
 use App\Enums\SocialAccount\Platform;
+use App\Enums\TikTok\PostMode;
 use App\Enums\TikTok\PrivacyLevel;
 use App\Enums\YouTube\Category;
 use App\Enums\YouTube\License;
@@ -53,7 +54,7 @@ class PostPlatformMetaRules
      * clients by every tool that schedules or publishes, so a new rule is
      * written here once.
      */
-    public const SCHEDULING_REQUIREMENTS = 'Before a post can be scheduled or published it needs: TikTok meta.privacy_level (get-tiktok-creator-info-tool), Pinterest meta.board_id (list-pinterest-boards-tool), Discord meta.channel_id (list-discord-channels-tool), Google Business events and offers meta.event (title and dates), YouTube a title (meta.title, or the first line of the text), a poll (content_type x_poll, mastodon_poll or threads_poll) meta.poll with at least 2 options plus text as its question, and on X and Mastodon duration_minutes (a reply poll in meta.thread_replies on X or Mastodon needs the same, its text being the question); list-content-types-tool lists the TikTok, Pinterest and Discord ones per platform as required_meta. A scheduled or published post also needs text or media; a poll needs text and takes no media.';
+    public const SCHEDULING_REQUIREMENTS = 'Before a post can be scheduled or published it needs: TikTok meta.privacy_level (get-tiktok-creator-info-tool; not for meta.post_mode inbox), Pinterest meta.board_id (list-pinterest-boards-tool), Discord meta.channel_id (list-discord-channels-tool), Google Business events and offers meta.event (title and dates), YouTube a title (meta.title, or the first line of the text), a poll (content_type x_poll, mastodon_poll or threads_poll) meta.poll with at least 2 options plus text as its question, and on X and Mastodon duration_minutes (a reply poll in meta.thread_replies on X or Mastodon needs the same, its text being the question); list-content-types-tool lists the TikTok, Pinterest and Discord ones per platform as required_meta. A scheduled or published post also needs text or media; a poll needs text and takes no media.';
 
     /** An Instagram username, with or without its leading @. */
     public const INSTAGRAM_USERNAME_PATTERN = '/^@?[A-Za-z0-9._]{1,30}$/';
@@ -118,6 +119,7 @@ class PostPlatformMetaRules
             "{$prefix}.document_title" => ['sometimes', 'nullable', 'string', 'max:300'],
 
             "{$prefix}.privacy_level" => ['sometimes', 'nullable', 'string', Rule::enum(PrivacyLevel::class)],
+            "{$prefix}.post_mode" => ['sometimes', 'nullable', 'string', Rule::enum(PostMode::class)],
             "{$prefix}.auto_add_music" => ['sometimes', 'boolean'],
             "{$prefix}.allow_comments" => ['sometimes', 'boolean'],
             "{$prefix}.allow_duet" => ['sometimes', 'boolean'],
@@ -254,7 +256,7 @@ class PostPlatformMetaRules
     {
         return implode(' ', [
             'Per-platform metadata. A thread on X, Bluesky or Mastodon, or a comment on LinkedIn, is meta.thread_replies (see below).',
-            'TikTok: privacy_level PUBLIC_TO_EVERYONE|MUTUAL_FOLLOW_FRIENDS|FOLLOWER_OF_CREATOR|SELF_ONLY (required to publish; call get-tiktok-creator-info-tool first and pick one of its privacy_level_options, and keep allow_comments/allow_duet/allow_stitch false when it reports them disabled) + flags allow_comments, disclose (commercial content), brand_content_toggle (paid partnership), brand_organic_toggle (your own brand); on tiktok_video also allow_duet, allow_stitch and is_aigc (AI-generated content label), on tiktok_photo also auto_add_music. SELF_ONLY cannot be combined with brand_content_toggle.',
+            'TikTok: post_mode direct|inbox (default direct; inbox uploads a draft to the creator\'s TikTok inbox to finish and post in the app, needs no privacy_level and ignores the caption and other flags), privacy_level PUBLIC_TO_EVERYONE|MUTUAL_FOLLOW_FRIENDS|FOLLOWER_OF_CREATOR|SELF_ONLY (required to publish a direct post; call get-tiktok-creator-info-tool first and pick one of its privacy_level_options, and keep allow_comments/allow_duet/allow_stitch false when it reports them disabled) + flags allow_comments, disclose (commercial content), brand_content_toggle (paid partnership), brand_organic_toggle (your own brand); on tiktok_video also allow_duet, allow_stitch and is_aigc (AI-generated content label), on tiktok_photo also auto_add_music. SELF_ONLY cannot be combined with brand_content_toggle.',
             'Mastodon: spoiler_text (content warning, ≤500; counts toward the 500-character post limit).',
             'Pinterest: board_id (required to publish — call list-pinterest-boards-tool first, or create-pinterest-board-tool), title (≤100), link (destination URL). Pin description comes from the post content; a video pin cover frame is the media item meta.cover_offset_ms.',
             'Discord: channel_id (required to publish — call list-discord-channels-tool first), mentions ([{token,label}], e.g. {token: "@everyone"} or {token: "<@&roleId>"}), embeds (up to 10 [{title ≤256, description ≤4096, url, image (URL), color (#RRGGBB)}]).',
@@ -585,6 +587,10 @@ class PostPlatformMetaRules
      */
     private static function tiktokPrivacyViolation(mixed $meta): ?array
     {
+        if (PostMode::fromMeta($meta) === PostMode::Inbox) {
+            return null;
+        }
+
         $privacyLevel = PrivacyLevel::tryFrom((string) data_get($meta, 'privacy_level'));
 
         if ($privacyLevel === null) {
