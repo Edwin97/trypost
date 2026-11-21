@@ -378,6 +378,15 @@ class Post extends Model
     }
 
     /**
+     * Posts carrying this caller's own reference in `meta.external_ref` (an
+     * id from the tool that made the content, e.g. "stool-log/23/youtube").
+     */
+    public function scopeWithExternalRef(Builder $query, ?string $externalRef): Builder
+    {
+        return $query->when(filled($externalRef), fn (Builder $filtered): Builder => $filtered->where('posts.meta->external_ref', $externalRef));
+    }
+
+    /**
      * Posts TryPost published to TikTok.
      */
     public function scopePublishedToTikTok(Builder $query): Builder

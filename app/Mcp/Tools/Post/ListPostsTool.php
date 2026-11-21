@@ -49,6 +49,7 @@ class ListPostsTool extends Tool
             'channels' => ['sometimes', 'nullable', 'array'],
             'labels' => ['sometimes', 'nullable', 'array'],
             'untagged' => ['sometimes', 'nullable'],
+            'external_ref' => ['sometimes', 'nullable', 'string', 'max:191'],
             'page' => ['sometimes', 'integer', 'min:1'],
         ]);
 
@@ -62,6 +63,7 @@ class ListPostsTool extends Tool
                 RequestIds::uuidList(collect((array) data_get($validated, 'labels'))),
                 filter_var(data_get($validated, 'untagged'), FILTER_VALIDATE_BOOLEAN),
             )
+            ->withExternalRef(data_get($validated, 'external_ref'))
             ->with(['socialAccount', 'user', 'approvalRequestedBy', 'approver', 'labels']);
 
         $query = match (data_get($validated, 'status')) {
@@ -99,6 +101,7 @@ class ListPostsTool extends Tool
             'channels' => $schema->array()->items($schema->string())->description('Only posts on one of these social account IDs (list-social-accounts-tool).'),
             'labels' => $schema->array()->items($schema->string())->description('Only posts with one of these label IDs.'),
             'untagged' => $schema->boolean()->description('Include posts without labels (combines with labels).'),
+            'external_ref' => $schema->string()->description('Only posts whose meta.external_ref is exactly this (your own id for the content, set when creating the post).'),
             'page' => $schema->integer()->description('Page number.'),
         ];
     }

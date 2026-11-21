@@ -25,6 +25,7 @@ class ListPostsRequest extends FormRequest
             'channels' => ['sometimes', 'nullable', 'array'],
             'labels' => ['sometimes', 'nullable', 'array'],
             'untagged' => ['sometimes', 'nullable'],
+            'external_ref' => ['sometimes', 'nullable', 'string', 'max:191'],
         ];
     }
 
@@ -39,6 +40,7 @@ class ListPostsRequest extends FormRequest
             'channels' => RequestIds::uuidList(collect((array) data_get($validated, 'channels'))->unique()),
             'labels' => RequestIds::uuidList(collect((array) data_get($validated, 'labels'))),
             'untagged' => filter_var(data_get($validated, 'untagged'), FILTER_VALIDATE_BOOLEAN),
+            'external_ref' => data_get($validated, 'external_ref'),
         ];
     }
 }

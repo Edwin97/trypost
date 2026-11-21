@@ -50,6 +50,7 @@ class PostController extends Controller
             ->visiblePendingApprovalsFor(BuildPublishPageProps::pendingApprovalsRequester($user, $workspace))
             ->onChannels(data_get($filters, 'channels') ?: null)
             ->matchingLabelFilter(data_get($filters, 'labels'), data_get($filters, 'untagged'))
+            ->withExternalRef(data_get($filters, 'external_ref'))
             ->with(['socialAccount', 'user', 'approvalRequestedBy', 'approver', 'labels'])
             ->latestScheduledFirst()
             ->paginate((int) config('app.pagination.default'));
