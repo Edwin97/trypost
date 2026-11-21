@@ -1,0 +1,11 @@
+# Our fork's image on top of compose.prod.yaml (Edwin97/trypost, branch "edwin": YouTube retention curve,
+# TikTok inbox drafts, meta.external_ref). Build it with the "Publish Docker image" workflow (Actions → Run workflow
+# on branch edwin), then on the server:
+#
+#   docker compose -f compose.prod.yaml -f compose.edwin.yaml up -d
+#
+# Everything else (APP_URL, passwords, APP_KEY, the platform app keys) is set in compose.prod.yaml as upstream
+# documents. Keep this file to the overrides only, so upstream updates merge cleanly.
+services:
+  app:
+    image: ghcr.io/edwin97/trypost:latest
