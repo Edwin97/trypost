@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => 'Νέα προσπάθεια στις :time',
         'published_via' => 'Δημοσιεύτηκε μέσω',
         'published_directly_from' => 'Δημοσιεύτηκε απευθείας από το :network',
+        'retention' => [
+            'title' => 'Διατήρηση κοινού',
+            'as_of' => 'Στις :date',
+            'start' => 'Αρχή',
+            'end' => 'Τέλος',
+            'summary' => ':start% συνεχίζουν να βλέπουν μετά το πρώτο δευτερόλεπτο, :end% στο τέλος',
+        ],
         'slot_aria' => 'Προσθήκη ανάρτησης στο :channel στο :network στις :time',
         'no_time' => 'Χωρίς ώρα',
         'pending_slot' => [

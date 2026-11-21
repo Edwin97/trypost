@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => ':time に再試行',
         'published_via' => '公開先:',
         'published_directly_from' => ':network から直接公開されました',
+        'retention' => [
+            'title' => '視聴者維持率',
+            'as_of' => ':date 時点',
+            'start' => '開始',
+            'end' => '終了',
+            'summary' => '最初の1秒後も :start% が視聴中、最後は :end%',
+        ],
         'slot_aria' => ':network の :channel に :time の投稿を追加',
         'no_time' => '時間なし',
         'pending_slot' => [

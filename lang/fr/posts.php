@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => 'Nouvel essai à :time',
         'published_via' => 'Publié via',
         'published_directly_from' => 'Publié directement depuis :network',
+        'retention' => [
+            'title' => 'Rétention de l’audience',
+            'as_of' => 'Au :date',
+            'start' => 'Début',
+            'end' => 'Fin',
+            'summary' => ':start% regardent encore après la première seconde, :end% à la fin',
+        ],
         'slot_aria' => 'Ajouter une publication à :channel sur :network à :time',
         'no_time' => 'Sans heure',
         'pending_slot' => [

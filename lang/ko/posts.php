@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => ':time에 재시도',
         'published_via' => '게시 채널:',
         'published_directly_from' => ':network에서 직접 게시됨',
+        'retention' => [
+            'title' => '시청 지속률',
+            'as_of' => ':date 기준',
+            'start' => '시작',
+            'end' => '끝',
+            'summary' => '첫 1초 후에도 :start%가 시청 중, 끝에서는 :end%',
+        ],
         'slot_aria' => ':network의 :channel에 :time 게시물 추가',
         'no_time' => '시간 없음',
         'pending_slot' => [

@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => 'Повтор в :time',
         'published_via' => 'Опубликовано через',
         'published_directly_from' => 'Опубликовано напрямую из :network',
+        'retention' => [
+            'title' => 'Удержание аудитории',
+            'as_of' => 'На :date',
+            'start' => 'Начало',
+            'end' => 'Конец',
+            'summary' => ':start% смотрят после первой секунды, :end% — в конце',
+        ],
         'slot_aria' => 'Добавить пост в :channel в :network на :time',
         'no_time' => 'Без времени',
         'pending_slot' => [

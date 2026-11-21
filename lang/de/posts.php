@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => 'Neuer Versuch um :time',
         'published_via' => 'Veröffentlicht über',
         'published_directly_from' => 'Direkt über :network veröffentlicht',
+        'retention' => [
+            'title' => 'Zuschauerbindung',
+            'as_of' => 'Stand :date',
+            'start' => 'Anfang',
+            'end' => 'Ende',
+            'summary' => ':start% schauen nach der ersten Sekunde noch zu, :end% am Ende',
+        ],
         'slot_aria' => 'Beitrag für :channel auf :network um :time hinzufügen',
         'no_time' => 'Keine Uhrzeit',
         'pending_slot' => [

@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => 'Повтор о :time',
         'published_via' => 'Опубліковано через',
         'published_directly_from' => 'Опубліковано напряму з :network',
+        'retention' => [
+            'title' => 'Утримання аудиторії',
+            'as_of' => 'Станом на :date',
+            'start' => 'Початок',
+            'end' => 'Кінець',
+            'summary' => ':start% дивляться після першої секунди, :end% — наприкінці',
+        ],
         'slot_aria' => 'Додати допис до :channel у :network на :time',
         'no_time' => 'Без часу',
         'pending_slot' => [
