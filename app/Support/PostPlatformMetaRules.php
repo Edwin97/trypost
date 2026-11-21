@@ -36,6 +36,11 @@ use Illuminate\Validation\Validator;
  */
 class PostPlatformMetaRules
 {
+    /** Longest `meta.external_ref`: a caller's own id for the content behind a post. */
+    public const int EXTERNAL_REF_MAX_LENGTH = 191;
+
+    public const string EXTERNAL_REF_PATTERN = '/^[A-Za-z0-9._:\/@-]+$/';
+
     /**
      * Keys TryPost writes itself once a post is live (Telegram reactions): never
      * taken from a request, and kept when the post's settings are edited.
@@ -69,6 +74,7 @@ class PostPlatformMetaRules
     {
         return [
             "{$prefix}" => ['sometimes', 'nullable', 'array'],
+            "{$prefix}.external_ref" => ['sometimes', 'nullable', 'string', 'max:'.self::EXTERNAL_REF_MAX_LENGTH, 'regex:'.self::EXTERNAL_REF_PATTERN],
 
             "{$prefix}.share_to_feed" => ['sometimes', 'boolean'],
             "{$prefix}.collaborators" => ['sometimes', 'nullable', 'array', 'max:'.self::INSTAGRAM_MAX_COLLABORATORS],
@@ -254,6 +260,7 @@ class PostPlatformMetaRules
     {
         return implode(' ', [
             'Per-platform metadata. A thread on X, Bluesky or Mastodon, or a comment on LinkedIn, is meta.thread_replies (see below).',
+            'Any network: external_ref (your own id for the content behind the post, up to 191 letters, digits and . _ : / @ -; list-posts-tool filters on it).',
             'TikTok: privacy_level PUBLIC_TO_EVERYONE|MUTUAL_FOLLOW_FRIENDS|FOLLOWER_OF_CREATOR|SELF_ONLY (required to publish; call get-tiktok-creator-info-tool first and pick one of its privacy_level_options, and keep allow_comments/allow_duet/allow_stitch false when it reports them disabled) + flags allow_comments, disclose (commercial content), brand_content_toggle (paid partnership), brand_organic_toggle (your own brand); on tiktok_video also allow_duet, allow_stitch and is_aigc (AI-generated content label), on tiktok_photo also auto_add_music. SELF_ONLY cannot be combined with brand_content_toggle.',
             'Mastodon: spoiler_text (content warning, ≤500; counts toward the 500-character post limit).',
             'Pinterest: board_id (required to publish — call list-pinterest-boards-tool first, or create-pinterest-board-tool), title (≤100), link (destination URL). Pin description comes from the post content; a video pin cover frame is the media item meta.cover_offset_ms.',
