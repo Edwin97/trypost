@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => 'Mencoba lagi pukul :time',
         'published_via' => 'Diterbitkan lewat',
         'published_directly_from' => 'Ini diterbitkan langsung dari :network',
+        'retention' => [
+            'title' => 'Retensi penonton',
+            'as_of' => 'Per :date',
+            'start' => 'Awal',
+            'end' => 'Akhir',
+            'summary' => ':start% masih menonton setelah detik pertama, :end% di akhir',
+        ],
         'slot_aria' => 'Tambahkan postingan ke :channel di :network pukul :time',
         'no_time' => 'Tanpa waktu',
         'pending_slot' => [

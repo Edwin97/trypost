@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => '将于 :time 重试',
         'published_via' => '发布于',
         'published_directly_from' => '直接从 :network 发布',
+        'retention' => [
+            'title' => '观众留存率',
+            'as_of' => '截至 :date',
+            'start' => '开始',
+            'end' => '结束',
+            'summary' => '第一秒后仍有 :start% 在看，结尾时为 :end%',
+        ],
         'slot_aria' => '在 :time 为 :network 上的 :channel 添加帖子',
         'no_time' => '无时间',
         'pending_slot' => [

@@ -1054,6 +1054,13 @@ return [
         'retrying_at' => 'Reintento a las :time',
         'published_via' => 'Publicado en',
         'published_directly_from' => 'Publicado directamente desde :network',
+        'retention' => [
+            'title' => 'Retención de la audiencia',
+            'as_of' => 'A :date',
+            'start' => 'Inicio',
+            'end' => 'Final',
+            'summary' => ':start% sigue viendo tras el primer segundo, :end% al final',
+        ],
         'slot_aria' => 'Añadir una publicación a :channel en :network a las :time',
         'no_time' => 'Sin hora',
         'pending_slot' => [

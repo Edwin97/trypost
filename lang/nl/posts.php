@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => 'Nieuwe poging om :time',
         'published_via' => 'Gepubliceerd via',
         'published_directly_from' => 'Rechtstreeks gepubliceerd vanuit :network',
+        'retention' => [
+            'title' => 'Kijkersbehoud',
+            'as_of' => 'Per :date',
+            'start' => 'Begin',
+            'end' => 'Einde',
+            'summary' => ':start% kijkt na de eerste seconde nog, :end% aan het einde',
+        ],
         'slot_aria' => 'Bericht toevoegen aan :channel op :network om :time',
         'no_time' => 'Geen tijd',
         'pending_slot' => [

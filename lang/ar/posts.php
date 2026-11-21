@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => 'إعادة المحاولة في :time',
         'published_via' => 'نُشر عبر',
         'published_directly_from' => 'نُشر مباشرةً من :network',
+        'retention' => [
+            'title' => 'احتفاظ الجمهور',
+            'as_of' => 'حتى :date',
+            'start' => 'البداية',
+            'end' => 'النهاية',
+            'summary' => ':start% ما زالوا يشاهدون بعد الثانية الأولى، و:end% في النهاية',
+        ],
         'slot_aria' => 'أضف منشورًا إلى :channel على :network في :time',
         'no_time' => 'بدون وقت',
         'pending_slot' => [

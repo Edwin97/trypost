@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => 'Nuovo tentativo alle :time',
         'published_via' => 'Pubblicato tramite',
         'published_directly_from' => 'Pubblicato direttamente da :network',
+        'retention' => [
+            'title' => 'Fidelizzazione del pubblico',
+            'as_of' => 'Al :date',
+            'start' => 'Inizio',
+            'end' => 'Fine',
+            'summary' => ':start% guarda ancora dopo il primo secondo, :end% alla fine',
+        ],
         'slot_aria' => 'Aggiungi un post a :channel su :network alle :time',
         'no_time' => 'Nessun orario',
         'pending_slot' => [

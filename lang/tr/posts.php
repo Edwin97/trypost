@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => ':time itibarıyla yeniden denenecek',
         'published_via' => 'Yayınlandığı yer:',
         'published_directly_from' => 'Doğrudan :network üzerinden yayınlandı',
+        'retention' => [
+            'title' => 'İzleyici tutma',
+            'as_of' => ':date itibarıyla',
+            'start' => 'Başlangıç',
+            'end' => 'Son',
+            'summary' => 'İlk saniyeden sonra izleyenlerin %:start\'i hâlâ izliyor, sonda %:end',
+        ],
         'slot_aria' => ':network üzerindeki :channel için :time saatine gönderi ekle',
         'no_time' => 'Saat yok',
         'pending_slot' => [

@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => 'Ponowna próba o :time',
         'published_via' => 'Opublikowano przez',
         'published_directly_from' => 'Opublikowano bezpośrednio w :network',
+        'retention' => [
+            'title' => 'Utrzymanie widzów',
+            'as_of' => 'Stan na :date',
+            'start' => 'Początek',
+            'end' => 'Koniec',
+            'summary' => ':start% ogląda dalej po pierwszej sekundzie, :end% na końcu',
+        ],
         'slot_aria' => 'Dodaj post do :channel w :network o :time',
         'no_time' => 'Bez godziny',
         'pending_slot' => [
