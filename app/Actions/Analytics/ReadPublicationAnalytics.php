@@ -201,6 +201,7 @@ class ReadPublicationAnalytics
                 'preview_metadata' => $publication->preview_metadata,
                 'poll' => data_get($publication->provider_metadata, 'poll'),
                 'thread_polls' => data_get($publication->provider_metadata, 'thread_polls', []),
+                'retention' => data_get($publication->provider_metadata, 'retention'),
                 'account_display_name' => $publication->account_display_name,
                 'account_username' => $publication->account_username,
                 'account_avatar_url' => $publication->socialAccount?->avatar_url ?? $publication->account_avatar_url,

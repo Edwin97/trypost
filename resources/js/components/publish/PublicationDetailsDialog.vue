@@ -6,6 +6,7 @@ import ChannelAvatar from '@/components/ChannelAvatar.vue';
 import MediaLightbox from '@/components/media/MediaLightbox.vue';
 import PostDetailsMedia from '@/components/publish/PostDetailsMedia.vue';
 import PostMetricsBand from '@/components/publish/PostMetricsBand.vue';
+import PostRetentionCurve from '@/components/publish/PostRetentionCurve.vue';
 import PostStatusBadge from '@/components/publish/PostStatusBadge.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -37,7 +38,6 @@ const open = defineModel<boolean>('open', { required: true });
 
 const publication = computed(() => props.detail.publication);
 
-
 const isDeletedOnNetwork = computed(
     () => publication.value.availability === PublicationAvailability.Deleted,
 );
@@ -50,7 +50,8 @@ const accountName = computed(
 );
 
 const permalink = computed(() =>
-    publication.value.permalink && /^https:\/\//i.test(publication.value.permalink)
+    publication.value.permalink &&
+    /^https:\/\//i.test(publication.value.permalink)
         ? publication.value.permalink
         : null,
 );
@@ -149,6 +150,12 @@ const openMediaPreview = (): void => {
                     :channel-id="channelId"
                     class="-mx-6 px-6"
                     :metrics-test-id="`publication-details-metrics-${publication.id}`"
+                />
+
+                <PostRetentionCurve
+                    v-if="publication.retention?.points?.length"
+                    :retention="publication.retention"
+                    :test-id="`publication-details-retention-${publication.id}`"
                 />
 
                 <DialogFooter class="sm:justify-between">

@@ -1053,6 +1053,13 @@ return [
         'retrying_at' => 'Retrying at :time',
         'published_via' => 'Published via',
         'published_directly_from' => 'This was published directly from :network',
+        'retention' => [
+            'title' => 'Audience retention',
+            'as_of' => 'As of :date',
+            'start' => 'Start',
+            'end' => 'End',
+            'summary' => ':start% still watching after the first second, :end% at the end',
+        ],
         'slot_aria' => 'Add a post to :channel on :network at :time',
         'no_time' => 'No time',
         'pending_slot' => [

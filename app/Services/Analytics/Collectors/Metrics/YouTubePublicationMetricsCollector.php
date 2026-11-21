@@ -39,6 +39,7 @@ class YouTubePublicationMetricsCollector extends AbstractPublicationMetricsColle
         AnalyticsCollectionException::unlessGranted($account, YouTubeScopes::READ);
         $statistics = $this->statistics($account, $publication, $date);
         $report = $this->report($account, $publication, $date);
+        $retention = $this->retention($account, $publication, $date);
 
         return $this->observation($date, $this->withEngagements($this->present([
             $this->count(MetricKey::Views, $statistics, 'viewCount') ?? $this->count(MetricKey::Views, $report, 'views'),
@@ -52,7 +53,104 @@ class YouTubePublicationMetricsCollector extends AbstractPublicationMetricsColle
             $this->count(MetricKey::Saves, $report, 'videosAddedToPlaylists'),
             $this->count(MetricKey::SubscribersGained, $report, 'subscribersGained'),
             $this->count(MetricKey::SubscribersLost, $report, 'subscribersLost'),
-        ])));
+        ])), $retention === null ? null : ['retention' => $retention]);
+    }
+
+    /**
+     * The audience retention curve: for each point of the video (elapsed share of its
+     * length, 0.01 to 1.0), the share of views still watching (`watch_ratio`, can pass 1
+     * where people rewatch) and how that compares with similar videos
+     * (`relative_performance`, 0 to 1, 0.5 = typical). Null until YouTube has processed
+     * the video, when the channel refuses the report, or when the read fails for a
+     * reason other than rate limits, so a missing curve never blocks the counts.
+     *
+     * @see https://developers.google.com/youtube/analytics/channel_reports#audience-retention-reports
+     *
+     * @return array{as_of: string, points: list<array{at: float, watch_ratio: float, relative_performance: float|null}>}|null
+     */
+    private function retention(SocialAccount $account, AnalyticsPublication $publication, CarbonImmutable $date): ?array
+    {
+        if ($account->missingScope(YouTubeScopes::ANALYTICS) !== null) {
+            return null;
+        }
+
+        try {
+            $response = $this->get($account,
+                config('trypost.platforms.youtube.analytics_api').'/reports',
+                [
+                    'ids' => 'channel==MINE',
+                    'startDate' => $publication->provider_published_at->toDateString(),
+                    'endDate' => $date->toDateString(),
+                    'dimensions' => 'elapsedVideoTimeRatio',
+                    'metrics' => 'audienceWatchRatio,relativeRetentionPerformance',
+                    'filters' => "video=={$publication->remote_id}",
+                    'sort' => 'elapsedVideoTimeRatio',
+                ],
+            );
+        } catch (AnalyticsCollectionException $exception) {
+            if ($exception->category === 'rate_limited') {
+                throw $exception;
+            }
+
+            return null;
+        }
+
+        return self::retentionCurve(
+            (array) $response->json('columnHeaders', []),
+            (array) $response->json('rows', []),
+            $date,
+        );
+    }
+
+    /**
+     * @param  array<int, mixed>  $headers
+     * @param  array<int, mixed>  $rows
+     * @return array{as_of: string, points: list<array{at: float, watch_ratio: float, relative_performance: float|null}>}|null
+     */
+    public static function retentionCurve(array $headers, array $rows, CarbonImmutable $date): ?array
+    {
+        $columns = [];
+
+        foreach ($headers as $index => $header) {
+            $name = data_get($header, 'name');
+
+            if (is_string($name)) {
+                $columns[$name] = $index;
+            }
+        }
+
+        if (! isset($columns['elapsedVideoTimeRatio'], $columns['audienceWatchRatio'])) {
+            return null;
+        }
+
+        $points = [];
+
+        foreach ($rows as $row) {
+            $at = data_get($row, $columns['elapsedVideoTimeRatio']);
+            $watch = data_get($row, $columns['audienceWatchRatio']);
+
+            if (! is_numeric($at) || ! is_numeric($watch)) {
+                continue;
+            }
+
+            $relative = isset($columns['relativeRetentionPerformance'])
+                ? data_get($row, $columns['relativeRetentionPerformance'])
+                : null;
+
+            $points[] = [
+                'at' => round((float) $at, 4),
+                'watch_ratio' => round((float) $watch, 4),
+                'relative_performance' => is_numeric($relative) ? round((float) $relative, 4) : null,
+            ];
+        }
+
+        if ($points === []) {
+            return null;
+        }
+
+        usort($points, fn (array $a, array $b): int => $a['at'] <=> $b['at']);
+
+        return ['as_of' => $date->toDateString(), 'points' => $points];
     }
 
     /**

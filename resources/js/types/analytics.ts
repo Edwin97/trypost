@@ -158,11 +158,7 @@ export interface WorkspaceAnalyticsReport extends AnalyticsReport {
     filters: WorkspaceAnalyticsFilters;
 }
 
-export type AnalyticsRangePreset =
-    | '7d'
-    | '30d'
-    | 'mtd'
-    | 'custom';
+export type AnalyticsRangePreset = '7d' | '30d' | 'mtd' | 'custom';
 
 export interface AnalyticsFilters {
     range: AnalyticsRangePreset;
@@ -308,6 +304,21 @@ export type MetricsUnavailableReason =
     | 'platform_not_supported'
     | 'not_collected';
 
+/** One point of YouTube's audience retention curve. */
+export interface PublicationRetentionPoint {
+    /** Elapsed share of the video, 0.01 to 1. */
+    at: number;
+    /** Share of views still watching; can pass 1 where people rewatch. */
+    watch_ratio: number;
+    /** Against similar videos, 0 to 1 (0.5 = typical). */
+    relative_performance: number | null;
+}
+
+export interface PublicationRetention {
+    as_of: string;
+    points: PublicationRetentionPoint[];
+}
+
 export interface PublicationAnalyticsDetail {
     available: true;
     reason: null;
@@ -325,6 +336,8 @@ export interface PublicationAnalyticsDetail {
         preview_metadata: Record<string, unknown> | null;
         poll: PublicationPoll | null;
         thread_polls: PublicationThreadPoll[];
+        /** YouTube: the audience retention curve, once YouTube has processed the video. */
+        retention?: PublicationRetention | null;
         account_display_name: string | null;
         account_username: string | null;
         account_avatar_url: string | null;
