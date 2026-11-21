@@ -6,6 +6,7 @@ namespace App\Services\Social;
 
 use App\Dto\MediaItem;
 use App\Enums\SocialAccount\Platform;
+use App\Enums\TikTok\PostMode;
 use App\Enums\TikTok\PrivacyLevel;
 use App\Enums\TikTok\PublishStatus;
 use App\Exceptions\PlatformUnavailableException;
@@ -233,9 +234,13 @@ class TikTokPublisher
 
         $postInfo = [
             'description' => $content ?? '',
-            'privacy_level' => $this->resolveRequiredPrivacyLevel($post)->value,
             'disable_comment' => ! data_get($meta, 'allow_comments', false),
         ];
+
+        // MEDIA_UPLOAD (inbox) takes no privacy level: the creator picks it in the app.
+        if (PostMode::fromMeta($meta) !== PostMode::Inbox) {
+            $postInfo['privacy_level'] = $this->resolveRequiredPrivacyLevel($post)->value;
+        }
 
         if (data_get($meta, 'brand_content_toggle', false)) {
             $postInfo['brand_content_toggle'] = true;
@@ -250,13 +255,20 @@ class TikTokPublisher
 
     private function publishVideo(Post $post, $media, ?string $content): array
     {
-        $response = $this->getHttpClient()
-            ->post("{$this->baseUrl}/post/publish/video/init/", [
+        $sourceInfo = [
+            'source' => 'PULL_FROM_URL',
+            'video_url' => $media->url,
+        ];
+
+        // An inbox upload takes the video alone: the creator writes the caption and
+        // picks who sees it in the TikTok app.
+        $response = PostMode::fromMeta($post->meta) === PostMode::Inbox
+            ? $this->getHttpClient()->post("{$this->baseUrl}/post/publish/inbox/video/init/", [
+                'source_info' => $sourceInfo,
+            ])
+            : $this->getHttpClient()->post("{$this->baseUrl}/post/publish/video/init/", [
                 'post_info' => $this->buildVideoPostInfo($post, $content, $media->coverOffsetMs()),
-                'source_info' => [
-                    'source' => 'PULL_FROM_URL',
-                    'video_url' => $media->url,
-                ],
+                'source_info' => $sourceInfo,
             ]);
 
         if ($response->failed()) {
@@ -303,6 +315,7 @@ class TikTokPublisher
                 }
             }
 
+            $inbox = PostMode::fromMeta($post->meta) === PostMode::Inbox;
             $postInfo = $this->buildPhotoPostInfo($post, $content);
 
             // Auto add music is only for photos.
@@ -319,7 +332,7 @@ class TikTokPublisher
                         'photo_cover_index' => 0,
                         'photo_images' => $photoUrls,
                     ],
-                    'post_mode' => 'DIRECT_POST',
+                    'post_mode' => $inbox ? 'MEDIA_UPLOAD' : 'DIRECT_POST',
                     'media_type' => 'PHOTO',
                 ]);
 
@@ -466,7 +479,7 @@ class TikTokPublisher
         $status = PublishStatus::tryFrom($statusValue);
 
         return match ($status) {
-            PublishStatus::PublishComplete => data_get($data, 'data', []),
+            PublishStatus::PublishComplete, PublishStatus::SendToUserInbox => data_get($data, 'data', []),
             PublishStatus::Failed => throw TikTokPublishException::fromFailReason(
                 (string) data_get($data, 'data.fail_reason', 'Unknown error'),
                 json_encode($data),
