@@ -49,6 +49,7 @@ class PassportServiceProvider extends ServiceProvider
 
         Passport::tokensCan([
             'mcp:use' => 'Use MCP server',
+            'member:posts' => 'Create posts for approval and read their metrics',
         ]);
 
         Passport::authorizationView(
