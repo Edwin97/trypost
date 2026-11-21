@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Middleware\Api;
 
 use App\Models\AccessToken;
+use App\Models\User;
 use App\Models\Workspace;
 use Closure;
 use Illuminate\Http\Request;
@@ -57,7 +58,7 @@ class LoadWorkspaceFromToken
                 return response()->json(['message' => 'Personal access token required.'], Response::HTTP_FORBIDDEN);
             }
 
-            if (! $user->can('manageTeam', $workspace)) {
+            if (! $user->can('manageTeam', $workspace) && ! $this->memberKeyMayUse($request, $authenticatedToken, $user, $workspace)) {
                 return response()->json(['message' => 'Insufficient workspace permissions.'], Response::HTTP_FORBIDDEN);
             }
         }
@@ -73,5 +74,17 @@ class LoadWorkspaceFromToken
         $token->forceFill(['last_used_at' => now()])->saveQuietly();
 
         return $next($request);
+    }
+
+    /**
+     * A member key (scope member:posts, issued by an admin with trypost:member-key) of a
+     * member who still needs approval, on one of the routes config('trypost.member_api_routes')
+     * lists. A member promoted to publish directly, or any other route, is refused.
+     */
+    private function memberKeyMayUse(Request $request, PassportAccessToken $token, User $user, Workspace $workspace): bool
+    {
+        return $token->can('member:posts')
+            && $user->requiresApprovalIn($workspace)
+            && in_array($request->route()?->getName(), (array) config('trypost.member_api_routes'), true);
     }
 }

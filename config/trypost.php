@@ -26,6 +26,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Member API keys
+    |--------------------------------------------------------------------------
+    |
+    | API keys are for admins. A member who needs approval can hold a key
+    | issued by an admin with `php artisan trypost:member-key` (scope
+    | member:posts): it reaches only these routes, so an agent can upload and
+    | create posts that wait for an admin's approval and read their metrics,
+    | and can never approve, publish directly or manage the workspace.
+    |
+    */
+
+    'member_api_routes' => [
+        'api.workspace.show',
+        'api.social-accounts.index',
+        'api.content-types',
+        'api.uploads.create',
+        'api.posts.index',
+        'api.posts.show',
+        'api.posts.store',
+        'api.posts.metrics',
+        'api.posts.preview',
+        'api.analytics.publications.show',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Changelog ("What's New")
     |--------------------------------------------------------------------------
     |
